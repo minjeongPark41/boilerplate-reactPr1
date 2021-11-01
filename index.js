@@ -4,6 +4,7 @@ const express = require('express') // express를 설치해줬기 때문에 이�
 const app = express() // function을 이용해서 새로운 express app을 만들고
 const port = 5000 // 3,4,5000번 해도 됨
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 
 const config = require('./config/key')
 
@@ -14,6 +15,8 @@ const {User} = require("./models/User")
 app.use(bodyParser.urlencoded({extended: true}))
 // application/json 타입으로 된 걸 분석해서 가지고 옴
 app.use(bodyParser.json())
+// 이렇게 적어줌으로서 이제 cookieParser 사용할 수 있게 되는거지
+app.use(cookieParser())
 
 const mongoose = require('mongoose') //mongoose 설치해줬기에 또 이렇게 가지고 와주고
 mongoose.connect(config.mongoURI, {
@@ -48,7 +51,53 @@ app.post('/register', (req, res) => {
     })
 })
 
+// 로그인 기능 만들기
+app.post('/login', (req, res) => {
+  // 1. db에 요청된 이메일이 있는지 찾기
+  User.findOne({ email: req.body.email}, (err, user)=>{
+    // 만약에 이 이메일(바로 위)을 가진 유저가 한 명도 없다면 user가 없겠지
+    if(!user){
+      return res.json({
+        loginSuccess:false,
+        message:"작성한 이메일에 해당되는 유저가 없습니다."
+      })
+    }
+  // 2. 요청된 이메일이 db에 있다면 비밀번호가 맞는 비밀번호인지 확인
+    // 메소드를 만들어서 (두가지 argument를 넣어준다. 두번째거는 콜백함수)
+    // (err, err가 아니면 isMatch)
+    user.comparePassword(req.body.password, (err, isMatch)=>{
+      // 메소드는 User모델에서 만들면 됨
 
+      // isMatch가 없다는 것은, 비밀번호가 틀렸다는 것
+      if(!isMach) 
+        return res.json({loginSuccess:false, message:"비밀번호가 틀렸습니다."})
+
+      // 3. 비밀번호가 맞다면, 토큰 생성하기
+      user.generateToken((err, user)=>{
+        // client한테 400 상태와 함께, send(err) - 에러메시지도 같이 전달
+        if(err) return res.status(400).send(err) 
+
+        // 토큰을 저장한다. 어디에? 쿠키, 로컬 스토리지, 세션 등등 
+        // 우리는 우선 쿠키에 저장해보자. 이를 위해서 npm install cookie-parser --save
+
+        // 브라우저에서 x_auth라는 이름으로(그래서 다른 이름도 당근 가능) token이 들어가게 되는 것
+        res.cookie("x_auth", user.token)
+        .status(200)
+        .json({loginSuccess:true, userId:user_id})
+
+
+      })
+    
+    }) 
+
+
+  })
+  
+  
+
+
+
+})
 
 
 
