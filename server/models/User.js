@@ -111,11 +111,32 @@ userSchema.methods.generateToken = function(cb){
         cb(null, user)
         // 여기의 user 정보가 index.js의 user.generateToken(err, user)의 user로 간 것
     })
+}
+
+userSchema.statics.findByToken = function (token, cb) {
+
+    var user = this
+
+    // token을 decode한다
+    // 두 번째 인자에는, token 만들 때 user._id + '어떤 string' = token 이렇게 만들어줬었지. '어떤 string'을 넣어주면 됨
+    // decoded에 들어갈건 = decoded된 user id일 것
+    jwt.verify(token, 'makingToken', function(err, decoded){
+        //  유저 아이디를 이용해서 유저를 찾은 다음 
+        //  client에서 가지고 온 token과 db에 보관된 token이 일치하는지 확인
+
+        // findOne은 mongodb에 있는 메소드. "어떤 거로 찾을거냐하면~~"
+        // user_id로 찾을거고, token으로도 찾을거다.
+        user.findOne({"_id": decoded, "token":token}, function(err, user){
+
+            if(err) return cb(err)
+            // 만약 에러가 없다면 user 정보를 전달
+            cb(null, user)
+        })
+    })
 
 
 
 }
-
 
 
 
