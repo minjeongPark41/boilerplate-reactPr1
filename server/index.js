@@ -29,6 +29,10 @@ app.get('/', (req, res) => { // '/' 디렉토리에 hello world가 출력되도�
   res.send('Hello World~~지호지호!')
 })
 
+app.get('/api/hello', (req, res) =>{
+  res.send("axios 테스트 테스트 ")
+})
+
 // 위에는 정말 간단한 router. 이제는 회원 가입을 위한 router를 만들어보자
 // 이번에 endpoint는 /register로 해보자
 // callback fuction을 (req, res) 넣어주고
