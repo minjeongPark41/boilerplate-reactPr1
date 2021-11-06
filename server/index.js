@@ -30,7 +30,7 @@ app.get('/', (req, res) => { // '/' 디렉토리에 hello world가 출력되도�
 })
 
 app.get('/api/hello', (req, res) =>{
-  res.send("axios 테스트 테스트 ")
+  res.send("axios 테스트 테스트")
 })
 
 // 위에는 정말 간단한 router. 이제는 회원 가입을 위한 router를 만들어보자
