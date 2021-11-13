@@ -121,6 +121,7 @@ app.get('/api/users/auth', auth, (req,res) =>{
   app.get('/api/users/logout', auth, (req, res) => {
   // User를 가지고 와서 / 찾아서 업데이트 시킴 / 찾는 건 id로 찾겠지 (middleware에서 가지고 와서 찾는 것)
   // 그리고 token을 지워주는 것
+  // findOneAndUpdate은 mongoose에 있는 함수
   User.findOneAndUpdate({_id:req.user._id}, {token:""}, (err, user)=>{
       if (err) return res.json({ success:false, err})
       return res.status(200).send({

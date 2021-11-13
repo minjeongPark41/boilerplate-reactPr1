@@ -50,7 +50,7 @@ userSchema.pre('save', function( next ){
 
         // 해야할 일 - 비밀번호 암호화 시키기. 그래서 위에 const bcrypt = require('bcrypt')
 
-        // bcrypt에서 salt가지고 오는데 (saltRonds 필요해서 가지고오고, )
+        // bcrypt에서 salt가지고 오는데 (saltRounds 필요해서 가지고오고, )
         bcrypt.genSalt(saltRounds, function(err, salt) {
             // err가 나면 바로 next로 보내주고
         if(err) return next(err) 
@@ -81,7 +81,7 @@ userSchema.methods.comparePassword = function(plainPassword, cb){
     // 이 2개가 같은지를 체크해야하는 것
     // plainPassword:123456, 암호화된 비밀번호: $2b$10$TWsGipJFd3.Rk4iI8slhTegM0qGgdm.OegSnQz36..j8pUeZaZVoW
     bcrypt.compare(plainPassword, this.password, function(err, isMatch){
-        if(err) return cb(err),
+        if(err) return cb(err)
         // 만약에 에러가 아니라면 (에러는 없고, isMatch - 이 값은 true가 될 것)
         cb(null, isMatch)
     })
